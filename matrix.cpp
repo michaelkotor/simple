@@ -6,8 +6,8 @@ int** create(int n, int m);
 void print(int** matrix, int n, int m);
 void custom_sort(int** matrix, int n, int m);
 void another_sort(int** matrix, int n, int m);
-int* createSingle(int n, int m);
-void printSingle(int* matrix, int n, int m);
+int* create_single(int n, int m);
+void print_single(int* matrix, int n, int m);
 
 int main(void) {
 	srand(time(NULL));
@@ -104,7 +104,7 @@ void custom_sort(int** matrix, int n, int m)
 	}
 }
 
-int* createSingle(int n, int m) 
+int* create_single(int n, int m) 
 {
 	int* matrix = (int*) malloc(n * m * sizeof(int));
 	for(int i = 0; i < n * m; i += m) 
@@ -117,7 +117,7 @@ int* createSingle(int n, int m)
 	return matrix;
 }
 
-void printSingle(int* matrix, int n, int m) 
+void print_single(int* matrix, int n, int m) 
 {
 	for(int i = 0; i < n * m; i += m) 
 	{
