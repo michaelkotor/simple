@@ -18,8 +18,8 @@ enum State Michael;
 
 int main(void) {
 	const int size = 10;
-	int array[size];
-	for(int i = Working; i <= Exit; i++) {
+	int array[size]
+;	for(int i = Working; i <= Exit; i++) {
 		printf("%d\n", i);
 	}
 
