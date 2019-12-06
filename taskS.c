@@ -12,11 +12,13 @@ char* get_clean(char* str, int limit);
 
 int main() 
 { 
-	int  limit = get_limit();
+	int limit = get_limit();
 	char* str = input(limit);
   	print(str);
   	char* new_str = get_clean(str, limit);
   	print(new_str);
+  	free(str);
+  	free(new_str);
   	return 0;
 } 
 
@@ -36,7 +38,7 @@ char* get_clean(char* str, int limit)
 
 		if(temp == '.')
 		{
-			after_dot = 1;
+			after_dot = true;
 		}
 
 		if(after_dot)
@@ -71,8 +73,8 @@ char* get_clean(char* str, int limit)
 			push(result, temp);
 		}
 	}
-	
-	result = (char*) realloc(result, size - symbols_passed);
+
+	result = (char*) realloc(result, (size - symbols_passed) * sizeof(char));
 	return result;
 }
 
@@ -95,14 +97,14 @@ char* input(int limit)
 {
 	printf("%s\n", "put your str");
 	char* str = (char*) calloc(limit + 2, sizeof(char));
-	fgets(str, limit + 1, stdin); 
-  	//*(str + limit + 1) = '\0';
+	fgets(str, limit + 1, std::stdin);
   	return str;
 }
 
 int get_limit()
 {
 	int limit;
+	printf("Enter the length of the string\n");
 	scanf("%d", &limit);
 	while ((getchar()) != '\n');
 	return limit;
@@ -127,3 +129,5 @@ void print(char* str)
 	printf("Your str:\n");
 	printf("%s", str);
 }
+
+//лаба номер 9, 10. страница 36
