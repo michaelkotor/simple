@@ -22,7 +22,7 @@ void get_input_data(struct InputValues* inputValues);
 int get_input_parameter(int index);
 
 struct Matrix* allocate_memory_for_matrixs(struct InputValues* inputValues);
-struct Matrix* allocate_matrix(struct InputValues* inputValues);
+void allocate_matrix(struct InputValues* inputValues, struct Matrix* whereToSave);
 
 void fill_matrixs(struct Matrix** matrixs, InputValues* inputValues);
 
@@ -53,7 +53,7 @@ int main(void)
 	struct Matrix* reallMatrixs = allocate_memory_for_matrixs(inputValues);
 	struct Matrix** matrixs = &reallMatrixs;
 	
-	//print_matrixs(matrixs, inputValues);
+	print_matrixs(matrixs, inputValues);
 	//fill_matrixs(matrixs, inputValues);
 	
 	// char* dictionary = get_all_words(matrixs, inputValues);
@@ -97,41 +97,36 @@ struct Matrix* allocate_memory_for_matrixs(struct InputValues* inputValues)
 	{
 		printf("I allocate memory for %d matrix\n", i);
 		//TODO: change
-		{
-			Matrix* temp = allocate_matrix(inputValues);
-			InputValues input1 = {1, 2, 2, 0};
-			print_matrixs(&temp,  &input1);
-		}
-		
-		matrixs[i] = allocate_matrix(inputValues)[0];
+		// {
+		// 	Matrix* temp = allocate_matrix(inputValues);
+		// 	InputValues input1 = {1, 2, 2, 0};
+		// 	print_matrixs(&temp,  &input1);
+		// }
+
+		allocate_matrix(inputValues, &matrixs[i]);
 	}
 	return matrixs;
 }
 
-struct Matrix* allocate_matrix(struct InputValues* inputValues)
+void allocate_matrix(struct InputValues* inputValues, struct Matrix* whereToSave)
 {
-	struct Matrix reallMatrix;
-	struct Matrix* matrix = &reallMatrix;
-
-	matrix->table = (char***) calloc(inputValues->length, sizeof(matrix->table[0]));
+	whereToSave->table = (char***) calloc(inputValues->length, sizeof(whereToSave->table[0]));
 
 	for(int i = 0; i < inputValues->length; ++i)
 	{
 		printf("Allocation memory for %d element\n", i);
-		matrix->table[i] = (char**) calloc(inputValues->width, sizeof(matrix->table[i][0]));
+		whereToSave->table[i] = (char**) calloc(inputValues->width, sizeof(whereToSave->table[i][0]));
 
 		for(int j = 0; j < inputValues->width; ++j)
 		{
 			printf("I also allocate memory for str...\n");
-			matrix->table[i][j] = (char*) calloc(matrix->max_length_of_str, sizeof(matrix->table[i][j][0]));
+			whereToSave->table[i][j] = (char*) calloc(whereToSave->max_length_of_str, sizeof(whereToSave->table[i][j][0]));
 		}
 	}
 
-	matrix->length = inputValues->length;
-	matrix->width = inputValues->width;
-	matrix->max_length_of_str = inputValues->max_length_of_str;
-
-	return matrix;
+	whereToSave->length = inputValues->length;
+	whereToSave->width = inputValues->width;
+	whereToSave->max_length_of_str = inputValues->max_length_of_str;
 }
 
 void fill_matrixs(struct Matrix** matrixs, InputValues* inputValues)
