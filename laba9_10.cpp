@@ -11,77 +11,218 @@ struct InputValues
 
 struct Matrix
 {
-	char*** matrix;
+	char*** table;
 	int length;
 	int width;
 	int max_length_of_str;
 };
 
-void print_matrixs(struct Matrix** matrixs, const InputValues* inputValues);
-void fill_matrixs(struct Matrix** matrixs, const InputValues* inputValues);
-int get_input_parameter(int index);
 void get_input_data(struct InputValues* inputValues);
+
+int get_input_parameter(int index);
+
 struct Matrix* allocate_memory_for_matrixs(struct InputValues* inputValues);
-struct Matrix allocate_matrix(struct InputValues* inputValues);
+struct Matrix* allocate_matrix(struct InputValues* inputValues);
+
+void fill_matrixs(struct Matrix** matrixs, InputValues* inputValues);
+
 char* input_str(int max_length_of_str, int counter);
-char* get_all_words(const struct Matrix* matrix);
-char* get_polindroms_from_words(char* const words);
-void print_polinfroms(char* const polindroms);
+
+void print_matrixs(struct Matrix** matrixs, InputValues* inputValues);
+
+char* get_all_words(struct Matrix* matrix, InputValues* inputValues);
+char* get_polindroms_from_words(char* words);
+void print_polinfroms(char* polindroms);
 void push_a_char_in_words(char* words, char to_be_pushed);
 void push_in_dictionary(char* sentence, char* words, int limit);
-int is_letter_or_blank(const char to_be_checked);
+int is_letter_or_blank(char to_be_checked);
 int length(char* dictionary);
 int get_end_of_word(char* dictionary);
 void push_char_in_polindrom(char** refer_to_polindroms, char to_be_pushed);
-int check_if_word_is_polindrom(const char*  dictionary, int start, int end);
+int check_if_word_is_polindrom(char*  dictionary, int start, int end);
 void push_word_to_polindroms(char** refer_to_polindroms, char* dictionary, int start, int end);
-void print_polyndroms(char* const polindroms);
+void print_polyndroms(char* polindroms);
 
 int main(void)
 {
-	struct InputValues* inputValues;
+	struct InputValues input;
+	struct InputValues* inputValues = &input;
 
 	get_input_data(inputValues);
+	
+	struct Matrix* reallMatrixs = allocate_memory_for_matrixs(inputValues);
+	struct Matrix** matrixs = &reallMatrixs;
+	
+	//print_matrixs(matrixs, inputValues);
+	//fill_matrixs(matrixs, inputValues);
+	
+	// char* dictionary = get_all_words(matrixs, inputValues);
+	// printf("-----------------------------------\n");
+	// printf("%s\n", dictionary);
+	// printf("-----------------------------------\n");
+	// char* polindroms = get_polindroms_from_words(dictionary);
+	// printf("-----------------------------------\n");
+	// print_polyndroms(polindroms);
+	// printf("-----------------------------------\n");
+}
 
-	struct Matrix* matrixs = allocate_memory_for_matrixs(inputValues);
+void get_input_data(struct InputValues* inputValues)
+{
 
-	fill_matrixs(&matrixs, inputValues);
-	print_matrixs(&matrixs, inputValues);
-	char* dictionary = get_all_words(matrixs);
-	printf("-----------------------------------\n");
-	printf("%s\n", dictionary);
-	printf("-----------------------------------\n");
-	char* polindroms = get_polindroms_from_words(dictionary);
-	printf("-----------------------------------\n");
-	print_polyndroms(polindroms);
-	printf("-----------------------------------\n");
+	inputValues->number_of_matrixs = get_input_parameter(1);
+	inputValues->length = get_input_parameter(2);
+	inputValues->width = get_input_parameter(3);
+	//inputValues->max_length_of_str = get_input_parameter(4);
+	inputValues->max_length_of_str = 40;
+}
+
+int get_input_parameter(int index)
+{
+	printf("Enter %d parameter\n", index);
+	int temp;
+	scanf("%d", &temp);
+	return temp;
 }
 
 struct Matrix* allocate_memory_for_matrixs(struct InputValues* inputValues)
 {
-	struct Matrix* matrixs = (Matrix*) malloc(
-		inputValues->number_of_matrixs * sizeof(Matrix[0]));
+	printf("----------------------------------------\n");
+	printf("Let's allocate memory for %d matrixs\n", inputValues->number_of_matrixs);
+	printf("----------------------------------------\n");
+
+	struct Matrix* matrixs = (Matrix*)
+		calloc(inputValues->number_of_matrixs, sizeof(matrixs[0]));
+
 	for(int i = 0; i < inputValues->number_of_matrixs; ++i)
 	{
-		matrixs[i] = allocate_matrix(inputValues);
+		printf("I allocate memory for %d matrix\n", i);
+		//TODO: change
+		{
+			Matrix* temp = allocate_matrix(inputValues);
+			InputValues input1 = {1, 2, 2, 0};
+			print_matrixs(&temp,  &input1);
+		}
+		
+		matrixs[i] = allocate_matrix(inputValues)[0];
 	}
 	return matrixs;
 }
 
-char* get_all_words(const struct Matrix* matrix, const InputValues* inputValues)
+struct Matrix* allocate_matrix(struct InputValues* inputValues)
+{
+	struct Matrix reallMatrix;
+	struct Matrix* matrix = &reallMatrix;
+
+	matrix->table = (char***) calloc(inputValues->length, sizeof(matrix->table[0]));
+
+	for(int i = 0; i < inputValues->length; ++i)
+	{
+		printf("Allocation memory for %d element\n", i);
+		matrix->table[i] = (char**) calloc(inputValues->width, sizeof(matrix->table[i][0]));
+
+		for(int j = 0; j < inputValues->width; ++j)
+		{
+			printf("I also allocate memory for str...\n");
+			matrix->table[i][j] = (char*) calloc(matrix->max_length_of_str, sizeof(matrix->table[i][j][0]));
+		}
+	}
+
+	matrix->length = inputValues->length;
+	matrix->width = inputValues->width;
+	matrix->max_length_of_str = inputValues->max_length_of_str;
+
+	return matrix;
+}
+
+void fill_matrixs(struct Matrix** matrixs, InputValues* inputValues)
+{
+	printf("----------------------------------------\n");
+	printf("Let's get string for matrixs\n");
+	printf("----------------------------------------\n");
+
+	for(int k = 0; k < inputValues->number_of_matrixs; ++k)
+	{
+		printf("I work with %d matrix\n", k);
+		int counter = 0;
+		for(int i = 0; i < inputValues->length; ++i)
+		{
+			for(int j = 0; j < inputValues->width; ++j)
+			{
+				//I am not sure, do I really need to allocate memore before writing str there
+				printf("%d %d\n", i, j);
+				matrixs[0]->table[i][j] =
+				 input_str(matrixs[0]->max_length_of_str, counter++);
+				 printf("I fell here\n");
+			}
+		}
+	}
+}
+
+char* input_str(int max_length_of_str, int counter)
+{
+	char c;
+	while ((c = getchar()) != '\n' && c != EOF) { }
+	char* temp = (char*) calloc(max_length_of_str + 1, sizeof(temp[0]));
+	printf("Enter %d sentence with max_length %d\n", counter, max_length_of_str);
+	fgets(temp, max_length_of_str + 1, stdin);
+	return temp;
+}
+
+void print_matrixs(struct Matrix** matrixs, InputValues* inputValues)
+{
+	printf("----------------------------------------\n");
+	printf("Let's print all the matrixs\n");
+	printf("----------------------------------------\n");
+
+	for(int k = 0; k < inputValues->number_of_matrixs; ++k)
+	{
+		printf("THIS IS START OF %d MATRIX:\n", k);
+
+		for(int i = 0; i < matrixs[k]->length; ++i)
+		{
+			for(int j = 0; j < matrixs[k]->width; ++j)
+			{
+				printf("%s", matrixs[k]->table[i][j]);
+			}
+			printf("\n");
+		}
+		printf("THIS IS END OF MATRIX:\n");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+char* get_all_words(struct Matrix* matrixs, InputValues* inputValues)
 {
 
-	char* dictionary = (char*) malloc(inputValues->max_length_of_str * matrix.max_length_of_str
-		* matrix.length * matrix.width * sizeof(dictionary[0]));
-	for(int k = 0; k < InputValues->max_length_of_str; ++k)
+	char* dictionary = (char*) malloc(inputValues->max_length_of_str * 
+		matrixs[0].max_length_of_str
+		* matrixs[0].length * matrixs[0].width * sizeof(dictionary[0]));
+	for(int k = 0; k < inputValues->max_length_of_str; ++k)
 	{
-		for(int i = 0; i < matrix.length; ++i)
+		for(int i = 0; i < matrixs[k].length; ++i)
 		{
 			int j = 0;
-			for(j = 0; j < matrix.width; ++j)
+			for(j = 0; j < matrixs[k].width; ++j)
 			{
-				push_in_dictionary(matrix.matrix[i][j],
-					dictionary, matrix.max_length_of_str);
+				push_in_dictionary(matrixs[k].table[i][j],
+					dictionary, matrixs[k].max_length_of_str);
 			}
 		}
 	}
@@ -106,7 +247,7 @@ void push_in_dictionary(char* sentence, char* dictionary, int limit)
 	push_a_char_in_words(dictionary, ' ');
 }
 
-int is_letter_or_blank(const char to_be_checked)
+int is_letter_or_blank(char to_be_checked)
 {
 	if(((to_be_checked >= 65 && to_be_checked <= 90) ||
 		(to_be_checked >= 97 && to_be_checked <= 122))
@@ -124,108 +265,7 @@ void push_a_char_in_words(char* dictionary, char to_be_pushed)
 	dictionary[i++] = to_be_pushed;
 }
 
-void print_matrixs(const struct Matrix** matrixs, const InputValues* inputValues)
-{
-	for(int k = 0; k < inputValues->number_of_matrixs; ++k)
-	{
-		printf("THIS IS START OF MATRIX:\n");
-		int i = 0;
-		for(i = 0; i < matrixs[k]->length; ++i)
-		{
-			int j = 0;
-			for(j = 0; j < matrixs[k]->width; ++j)
-			{
-				printf("%s", matrixs[k]->matrix[i][j]);
-			}
-			printf("\n");
-		}
-		printf("THIS IS END OF MATRIX:\n");
-	}
-	
-}
-
-void fill_matrixs(struct Matrix** matrixs, const InputValues* inputValues)
-{
-	for(int k = 0; k < inputValues->number_of_matrixs; ++k)
-	{
-		int counter = 0;
-		for(int i = 0; i < matrixs[k]->length; ++i)
-		{
-			int j = 0;
-			for(j = 0; j < matrixs[k]->width; ++j)
-			{
-				//I am not sure, do I really need to allocate memore before writing str there
-				//printf("%d %d\n", i, j);
-				matrixs[k]->matrix[i][j] =
-				 input_str(matrixs[k]->max_length_of_str, counter++);
-			}
-		}
-	}
-}
-
-int get_input_parameter(int index)
-{
-	printf("Enter %d parameter\n", index);
-	int temp;
-	scanf("%d", &temp);
-	return temp;
-}
-
-void get_input_data(struct InputValues* inputValues)
-{
-	inputValues->number_of_matrixs = get_input_parameter(1);
-	inputValues->length = get_input_parameter(2);
-	inputValues->width = get_input_parameter(3);
-	inputValues->max_length_of_str = get_input_parameter(4);
-}
-
-struct Matrix allocate_matrix(struct InputValues* inputValues)
-{
-	struct Matrix matrix;
-	matrix.matrix = (char***) malloc(inputValues -> length * sizeof(matrix.matrix[0]));
-	
-	if(matrix.matrix == NULL)
-	{
-		//TODO: somehow work with error
-		//I am not able to return null
-	}
-
-	int i = 0;
-	for(i = 0; i < inputValues->length; ++i)
-	{
-		matrix.matrix[i] = (char**)malloc(inputValues->width * sizeof(matrix.matrix[i][0]));
-		if(matrix.matrix[i] == NULL)
-		{
-
-		}
-
-		int j = 0;
-		for(j = 0; j < inputValues->width; ++j)
-		{
-			//matrix.matrix[i][j] = (char*) malloc(inputValues -> max_length_of_str * sizeof(matrix.matrix[i][j][0]));
-			if(matrix.matrix[i][j] == NULL)
-			{
-
-			}
-		}
-	}
-	matrix.length = inputValues->length;
-	matrix.width = inputValues->width;
-	matrix.max_length_of_str = inputValues->max_length_of_str;
-	return matrix;
-}
-
-char* input_str(int max_length_of_str, int counter)
-{
-	int c;
-	while ((c = getchar()) != '\n' && c != EOF) { }
-	char* temp = (char*) malloc((max_length_of_str + 1) * sizeof(temp[0]));
-	printf("Enter %d sentence with max_length %d\n", counter, max_length_of_str);
-	fgets(temp, max_length_of_str + 1, stdin);
-	return temp;
-}
-
-char* get_polindroms_from_words(char* const dictionary)
+char* get_polindroms_from_words(char* dictionary)
 {
 	int size = length(dictionary);
 	char* polindroms = (char*) 
@@ -287,7 +327,7 @@ void push_word_to_polindroms(char** refer_to_polindroms, char* dictionary, int s
 	}
 }
 
-void push_char_in_polindrom(char** refer_to_polindroms, const char to_be_pushed)
+void push_char_in_polindrom(char** refer_to_polindroms, char to_be_pushed)
 {
 	static int i;
 	printf("Now the polindroms contains just \n%s\n", *refer_to_polindroms);
@@ -343,7 +383,7 @@ int get_end_of_word(char* word)
 	return i;
 }
 
-int check_if_word_is_polindrom(const char* dictionary, int start, int end)
+int check_if_word_is_polindrom(char* dictionary, int start, int end)
 {
 	printf("I want check if these word is polindroms\n");
 	printf("----------------------------------\n");
